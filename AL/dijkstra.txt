@@ -82,8 +82,9 @@ int d[7]; // 최소 비용
 
 void dijkstra(int start) {
 	d[start] = 0;
-	priority_queue<pair<int, int>> pq;
+	priority_queue<pair<int, int>> pq; //최대 힙 구조 유지
 	pq.push(make_pair(0,start));
+	//가까운 순서대로 처리하므로 큐를 이용한다.
 	while (!pq.empty()) {
 		int current = pq.top().second;
 		//짧은 것이 먼저 오도록 음수화(우선순위 큐가 최대 힙이여서)
@@ -94,7 +95,8 @@ void dijkstra(int start) {
 		for (int i = 0; i < a[current].size(); i++) {
 			//선택된 노드의 인접 노드
 			int next = a[current][i].second;
-
+			//선택된 노드를 거쳐서 인접 노드로 가는 비용계산
+			//선택된 노드까지 가는 비용 + 그 노드를 거쳐서 가는 비용
 			int nextDistance = distance + a[current][i].first;
 
 			if (nextDistance < d[next]) {

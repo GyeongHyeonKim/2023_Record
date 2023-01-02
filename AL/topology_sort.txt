@@ -1,0 +1,88 @@
+
+
+-순서가 정해져있는 작업을 차례로 수행해야 할때 순서를 결정해주기 위해 사용한다.
+
+-DAG(Directd Acyclic Graph) 일 경우에만 사용이 가능하다.
+
+-사이클이 발생하는경우 위상정렬을 수행할 수 없다.
+
+-시작점이 있어야 사용할 수 있기 때문이다.
+
+-위상정렬 알고리즘은 2가지 해결책을 내는 특징이 있다.
+
+1. 현재 그래프는 위상정렬이 가능한지
+2. 정렬이 가능하다면, 그 결과는 무엇인지
+
+-큐와 스택을 사용하여 구현할 수 있으나 보통 큐를 많이 사용한다.
+
+* 진입차수 : 선행조건의 수라고 생각. 정점으로 들어오는 간선의 수
+
+순서
+1. 진입차수가 0인 정점을 큐에 넣는다.
+2. 큐에서 원소를 꺼내 연결된 모든 간선을 제거한다.
+3. 간선제거 후 진입차수가 0인 정점을 큐에 삽입한다.
+4. 2~3 반복 하는데 모든 원소를 방문하기전에 큐가 빈다면 사이클이 있다는 것이고
+	모든 원소를 방문했다면 큐에서 꺼낸 순서가 위상정렬의 결과이다.
+
+#include <iostream>
+#include <queue>
+#include <vector>
+#define MAX 10
+
+using namespace std;
+
+int n, inDegree[MAX];
+vector<int> a[MAX];
+
+void topologySort() {
+	int result[MAX];
+	queue<int> q;
+	//진입 차수가 0인 노드를 큐에 삽입합니다.
+	for (int i = 1; i <= n; i++) {
+		if (inDegree[i] == 0)q.push(i);
+	}
+	//위상 정렬이 완전히 수행되려면 정확히 N개의 노드를 반복한다.
+	for (int i = 1; i <= n; i++) {
+		//n개를 방문하기 전에 큐가 빈다면 사이클이 발생한것임
+		if (q.empty()) {
+			cout << "사이클 발생" << ' ';
+			return;
+		}
+		int x = q.front();
+		q.pop();
+		result[i] = x;
+		for (int i = 0; i < a[x].size(); i++) {
+			int y = a[x][i];
+			inDegree[y]--;
+			//새롭게 진입차수가0이된 정점을 큐에 삽입합니다.
+			if (inDegree[y] == 0) {
+				q.push(y);
+			}
+		}
+	}
+	for (int i = 1; i <= n; i++) {
+		cout << result[i] << ' ';
+	}
+}
+
+int main(void) {
+	n = 7;
+	a[1].push_back(2);
+	inDegree[2]++;
+	a[1].push_back(5);
+	inDegree[5]++;
+
+	a[2].push_back(3);
+	inDegree[3]++;
+	a[5].push_back(6);
+	inDegree[6]++;
+
+	a[3].push_back(4);
+	inDegree[4]++;
+	a[4].push_back(6);
+	inDegree[6]++;
+	a[6].push_back(7);
+	inDegree[7]++;
+
+	topologySort();
+}
